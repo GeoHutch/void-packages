@@ -1,0 +1,39 @@
+pkgname=zotero
+version=5.0.96.3
+revision=1
+archs="i686" #TODO: upstream supports other platforms, set this up
+depends="nss dbus-glib gtk+3 libXt"
+build_style=""
+short_desc="'Your Personal Research Assistant'"
+maintainer="George Higgins Hutchinson (george@hutch.space)"
+license="AGPL-3.0-only"
+homepage="https://www.zotero.org"
+# distfiles="https://www.zotero.org/download/client/release/${version}/Zotero-${version}_linux-${XBPS_MACHINE}.tar.bz2"
+distfiles="https://www.zotero.org/download/client/dl?channel=release&platform=linux-${XBPS_MACHINE}&version=${version}>zotero-${version}_linux-${XBPS_MACHINE}.tar.bz2"
+checksum="1aacb3cdf4418ce66633441aee348cc68fed112ec4a8a140f2ff93fcda20d8f0"
+nopie=yes
+
+do_install() {
+  vmkdir "opt/${pkgname}"
+  vmkdir "usr/bin"
+  vmkdir "usr/share/applications"
+  vmkdir usr/share/icons/hicolor/16x16/apps
+  vmkdir usr/share/icons/hicolor/32x32/apps
+  vmkdir usr/share/icons/hicolor/48x48/apps
+  vmkdir usr/share/icons/hicolor/256x256/apps
+  vcopy "*" "opt/${pkgname}"
+  ln -sf "/${TARGETPATH}/opt/${pkgname}/zotero" "${DESTDIR}/usr/bin/zotero"
+  ln -sf "/${TARGETPATH}/opt/${pkgname}/zotero.desktop" "${DESTDIR}/usr/share/applications/zotero.desktop"
+  vcopy "chrome/icons/default/default16.png"  "usr/share/icons/hicolor/16x16/apps/zotero.png"
+  vcopy "chrome/icons/default/default32.png"  "usr/share/icons/hicolor/32x32/apps/zotero.png"
+  vcopy "chrome/icons/default/default48.png"  "usr/share/icons/hicolor/48x48/apps/zotero.png"
+  vcopy "chrome/icons/default/default256.png" "usr/share/icons/hicolor/256x256/apps/zotero.png"
+}
+
+post_extract() {
+  rename "Zotero_linux-i686" "zotero-${version}" ${XBPS_BUILDDIR}/*
+}
+
+post_install() {
+  sed -i "s|Icon=.*|Icon=/usr/share/icons/hicolor/256x256/apps/zotero.png/|" ${DESTDIR}/opt/${pkgname}/zotero.desktop
+}
